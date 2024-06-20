@@ -1,0 +1,100 @@
+Getting Started: Building Location-Based (GIS) REST APIs with Python
+
+We are in the era of fully integrating GIS with IT operations to have a positive impact on a wider population. 
+The biggest resource to help one achieve that is the knowledge of building REST APIs.
+
+REST simply stands for REpresentational State Transfer and it’s an approach of building APIs on top of the HTTP Protocol. 
+Meaning you can perform the CRUD (Create, Read, Update, Delete)Databases tasks via the web. Additionally, 
+REST APIs return data in JSON or XML format.
+
+PROJECT DEFINITION:
+The project will build a GIS REST API for mainly two datasets i.e. Nairobi Health Facilities and Nairobi Sub Counties. 
+An add-on will be GIS abilities to query the nearest health facilities when given a user location and also 
+query health facilities by a Sub County boundary.
+
+2. PROJECT SET-UP
+You need to have Python 3 installed on your computer. 
+We can then set up a working directory and virtual environment. I am using a windows operating system.
+> pip install virtualenvironment
+> cd Desktop/
+> mkdir gis-rest-api-with-python
+
+After making our working directory, we set up a virtual environment, and activate it
+> cd gis-rest-api-with-python/
+> py -m venv env
+> .\env\Scripts\activate
+
+We can now install all the dependencies;
+> cd gis-rest-api-with-python/
+> pip install django
+> pip install djangorestframework
+> pip install djangorestframework-gis
+> pip install psycopg2
+> pip install django-filter
+
+Pyscopg2 helps with PostgreSQL database connections and the rest are quite clear 🙂.
+
+We can now create our project and app using the Django commands, and then we can see if this setup works.
+
+> mkdir src
+> cd src/
+> django-admin startproject gis_rest_project
+> cd gis_rest_project/
+> python manage.py startapp nairobi_hospitals_api
+> python manage.py runserver
+
+You should now be able to see the screenshot below on your web browser using http://127.0.0.1:8000/
+Yay! We are good to go 🤗.
+
+Not really, Lol, there is a Django setting.py file in your project folder that you need to add some of your dependencies 
+and app.
+
+NB: Django has got a project which can have multiple apps. For our case, 
+the project folder is gis_rest_project while our app folder is nairobi_hospitals_api. 
+To run a manage.py command, you should be in the project folder.
+
+3. Generating Django Models from existing Database
+PostgreSQL with PostGIS as a GIS extension is currently the most popular open-source way of storing geospatial data 
+in both development and production. If you ain’t familiar with PostGIS, I can recommend a book PostGIS in Action.
+
+To generate Django models from an existing database, make sure you are in your project directory and run the 
+following command:
+python manage.py inspectdb > models_generated_with_inspectdb.py
+
+You can now do a migration for the model to link with your database.
+
+3. Django Serializers
+We simply need serializers to translate our data to JSON so that it can be consumed over the internet. 
+We create a serializers.py file in the nairobi_hospitals_api app folder and then serialize our 
+2 Django models using GeoFeatureModelSerializer because these are location-based models.
+The serializers will be utilized in the Django views.
+
+4. Django Filters
+Django filters will assist us in filtering data just as the name suggests, 
+Let’s create a file named hospitals_filters.py in our nairobi_hospitals_api app folder.
+
+We create a class named NairobiHealthFacilitiesFilter that inherits from GeoFilterSet. 
+Since there is no inbuilt Django function to filter data by sub-county boundaries, 
+we create our own method get_facilities_by_subcounty to do the query.
+This class will be used in Django views.
+
+5. Django Views
+Django views simply takes a web request and returns a web response. 
+We are using ModelViewSet which inherits from GenericAPIView, 
+this comes with a lot of actions that we don’t need to implement ourselves. 
+For non-techies, this enables us to perform Create Read Update and Delete (CRUD)actions on our Data. 
+In REST API terms, they usually also known as GET, PUT, POST, and DELETE
+
+For us to get the GPS location of a user and query the 5 nearest health facilities, 
+we write our own GET action method named get_nearest_facilities in the NairobiHealthFacilitiesViewSet and 
+implement the query.
+We are almost getting done😜💪🏾.
+
+6. Django URLs
+URLs are our entry-point for the API endpoints and therefore key to configure our r outings. 
+On the gis_rest_project folder, we configure the urls.py to include our app urls.py which doesn’t exist yet.
+
+We move it into our nairobi_hospitals_api app folder and create our specified nairobi_hospitals_urls.py 
+where we import our Django views and also leverage Django REST Framework routers for our endpoints.
+
+Oh Yeah, we are done with writing some code 😉🙂 .
