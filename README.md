@@ -1,2 +1,2 @@
 # DjangoProjects
-Library for Django projects
+A repository for Django projects.
